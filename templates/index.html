@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <nav>
+        <h1> Min Lenke </h1>
+
+        <div>
+            <ul>
+                <li>
+                    <a href="/stiler"> Stiler </a>
+                </li>
+
+                <li>
+                    <a href="/eksempler"> Eksempler </a>                    
+                </li>
+
+                <li>
+                    <a href="/om"> Om </a>
+                </li>
+            </ul>
+
+            <a class="logginn" href="/logginn"> Logg Inn </a>
+        </div>
+    </nav>
+
+    <div class="body">
+        <h3> Vis hvem du er <br> Din digitale identitet <br> Samlet på et sted </h3>
+        <img src="" alt="">    
+    </div>
+
+    <div class="regbox">
+        <a class="register" href="/register"> Lag din side nå </a>
+    </div>
+
+</body>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@100..900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+    html {
+        background-color: #191724;
+        text-decoration: none;
+    }
+
+    h1
+    {
+        color: white;
+        font-family: "Lexend Mega", sans-serif;
+        font-size: 3.2rem;
+    }
+
+    a
+    {
+        text-decoration: none;
+    }
+
+    a:hover
+    {
+        text-decoration: underline;
+    }
+
+    nav
+    {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        width: 80%;
+        margin: 0 auto;
+        margin-bottom: 10rem;
+    }
+
+    ul
+    {
+        list-style-type: none;
+        display: inline-block;
+    }
+
+    li
+    {
+        display: inline-block;
+        margin-right: 2rem;
+    }
+
+    li a
+    {
+        color: white;
+        font-family: "Roboto Mono", monospace;
+    }
+
+    .logginn {
+        background-color: #bffc57;
+        padding: 0.8rem;
+        border-radius: 1rem;
+        font-family: "Roboto Mono", monospace;
+    }
+
+    .body {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 80%;
+        margin: 0 auto;
+        margin-bottom: 3rem;
+    }
+
+    .body h3 {
+        color: #dedede;
+        text-align: center;
+        font-family: "Lexend Mega", sans-serif;
+        font-size: 2.5rem;
+    }
+
+    .regbox
+    {
+        width: 70%;
+        margin: 0 auto;
+    }
+
+    .register
+    {
+        background-color: #ffb510;
+        color: white;
+        padding: 2rem;
+        padding-left: 5rem;
+        padding-right: 5rem;
+        border-radius: 1.5rem;
+        font-family: "Roboto Mono", monospace;
+        font-size: 1.5rem;
+    }
+</style>
+</html>
