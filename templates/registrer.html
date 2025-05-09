@@ -7,11 +7,64 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="body">
-        <form action="/registrer" method="post">
-            <input type="name" name="name">
-            <input type="password" name="password">
+    <div class="center">
+        <h1> Registrer bruker </h1>
+
+        <h4> Lag din egen bruker for å få tilgang til din side </h4>
+
+        <p id="error" style="color: red;">  </p>
+
+        <form id="register" action="/registrer" method="post">
+            <input required type="name" name="name" placeholder="Brukernavn">
+            <input id="email" type="email" name="email" placeholder="Email" hidden>
+            <input required type="password" name="password" placeholder="Passord">
+            <input required type="password" name="confirmPassword" placeholder="Bekreft Passord">
+            <label style="color: white;" for="showEmail"> Legg til email for sikkerhet </label>
+            <input id="showEmail" type="checkbox">
+            <div class="center">
+                <button> Registrer </button>
+            </div>
         </form>
     </div>
 </body>
+
+<script>
+    document.getElementById("showEmail").addEventListener("change", () => {
+        document.getElementById("email").hidden = !document.getElementById("showEmail").checked;
+    })
+
+    document.getElementById("register").onsubmit = function(event)
+    {
+        let name = event.target.name.value;
+
+        let error = [];
+
+        if (name.length < 3) {
+            event.preventDefault();
+            error.push("Navnet er for kort")
+        }
+
+        let password = event.target.password.value;
+
+        if (password.length < 8) {
+            event.preventDefault();
+            error.push("Passordet må være ihvertfall 8 bokstaver langt");
+        }
+
+        let confirmPassword = event.target.confirmPassword.value;
+
+        if (password != confirmPassword) {
+            event.preventDefault();
+            error.push("Passordene er ikke like");
+        }
+
+        let errorBox = document.getElementById("error");
+
+        errorBox.innerHTML = "";
+
+        for (let i = 0; i < error.length; i++) {
+            errorBox.innerHTML += error[i] + "<br>";
+        }
+    }
+</script>
 </html>

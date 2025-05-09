@@ -27,6 +27,9 @@ func registrer(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Klarte ikke laste inn side", http.StatusInternalServerError)
 			return
 		}
+	} else if r.Method == http.MethodPost {
+		http.Error(w, "Midlertid ikke registrer post", http.StatusMethodNotAllowed)
+		return
 	}
 }
 

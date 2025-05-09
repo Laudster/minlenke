@@ -1,0 +1,46 @@
+html
+{
+    background-color: #191724;
+}
+
+.center
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1
+{
+    color: white;
+    font-family: "Lexend Mega", sans-serif;
+    font-size: 3.2rem;
+}
+
+h4
+{
+    color: white;
+    font-family: "Roboto Mono", monospace;
+    font-size: 1.5rem;
+}
+
+input:not([hidden])
+{
+    display: block;
+    padding: 1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    border-radius: 1.5rem;
+    background-color: #2e2b3d;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+button {
+    background-color: #bffc57;
+    padding: 0.8rem;
+    border-radius: 1rem;
+    font-family: "Roboto Mono", monospace;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
