@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/registrer.css">
+    <link rel="stylesheet" href="/static/css/account-window.css">
     <title>Document</title>
 </head>
 <body>
@@ -12,7 +12,7 @@
 
         <h4> Lag din egen bruker for å få tilgang til din side </h4>
 
-        <p id="error" style="color: red;">  </p>
+        <p id="error" style="color: red;"> {{.}} </p>
 
         <form id="register" action="/registrer" method="post">
             <input required type="name" name="name" placeholder="Brukernavn">

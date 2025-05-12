@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/account-window.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="center">
+        <h1> Logginn </h1>
+
+        <h4> Logginn tilbake på brukeren din </h4>
+
+        <p id="error" style="color: red;"> {{.}} </p>
+
+        <form id="register" action="/logginn" method="post">
+            <input required type="name" name="name" placeholder="Brukernavn">
+            <input required type="password" name="password" placeholder="Passord">
+            <div class="center">
+                <button> Logginn </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

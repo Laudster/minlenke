@@ -26,7 +26,7 @@ func getUser(r *http.Request) (User, error) {
 
 	userCheck := "select id, name, hash, session, csrf from users where session = $1"
 
-	err = db.QueryRow(userCheck, sessionToken.Value).Scan(&user.Id, &user.Hash, &user.Session, &user.Csrf)
+	err = db.QueryRow(userCheck, sessionToken.Value).Scan(&user.Id, &user.Name, &user.Hash, &user.Session, &user.Csrf)
 
 	if err != nil {
 		return user, err
