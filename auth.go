@@ -40,7 +40,14 @@ func registerate(username string, password string, email string) error {
 
 	hash, _ := hashPassword(password)
 
-	_, err = db.Exec("insert into users(name, email, hash) values($1, $2, $3)", username, email, hash)
+	user, err := db.Exec("insert into users(name, email, hash) values($1, $2, $3)", username, email, hash)
+	id, _ := user.LastInsertId()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec("insert into rooms(name, body, links, style, user_id) values($1, $2, $3, $4, $5)", username, "Denne brukeren har enda ikke skrevet noe her", ":eksempel;https://eksempel.no:example;https://example.com:esempio;https://esempio.it", 1, id)
 
 	if err != nil {
 		return err

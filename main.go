@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-var templates = template.Must(template.ParseFiles("templates/index.html", "templates/registrer.html", "templates/login.html"))
+var templates = template.Must(template.ParseFiles("templates/index.html", "templates/registrer.html", "templates/login.html", "templates/skins/skin1.html", "templates/skins/skin2.html", "templates/skins/skin3.html"))
 
 var db *sql.DB
 
@@ -19,6 +19,21 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, "Klarte ikke laste inn side", http.StatusInternalServerError)
+		return
+	}
+}
+
+func besøksside(w http.ResponseWriter, r *http.Request) {
+	username := r.PathValue("navn")
+
+	room, _ := getRoom(username)
+
+	style := fmt.Sprintf("%d", room.Style)
+
+	err := templates.ExecuteTemplate(w, "skin"+style+".html", room)
+
+	if err != nil {
+		http.Error(w, "Klarte ikke laste inn side "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -135,6 +150,7 @@ func main() {
 	http.HandleFunc("/registrer", registrer)
 	http.HandleFunc("/logginn", loggin)
 	http.HandleFunc("/loggut", logout)
+	http.HandleFunc("/{navn}", besøksside)
 	http.HandleFunc("/", index)
 
 	http.ListenAndServe(":8080", nil)

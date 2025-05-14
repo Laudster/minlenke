@@ -7,11 +7,13 @@ import (
 )
 
 func createDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "users.db")
+	db, err := sql.Open("sqlite3", "db/data.db")
 
 	if err != nil {
 		return db, err
 	}
+
+	_, err = db.Exec("PRAGMA journal_mode=WAL;")
 
 	sqlStatement := `
 		create table if not exists users (
@@ -21,6 +23,15 @@ func createDB() (*sql.DB, error) {
 			hash text,
 			session text,
 			csrf text
+		);
+
+		create table if not exists rooms (
+			name text,
+			body text,
+			links text,
+			style integer,
+			user_id integer not null,
+			foreign key (user_id) references users(id)
 		);
 	`
 
