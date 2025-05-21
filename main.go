@@ -129,16 +129,20 @@ func saveLinks(w http.ResponseWriter, r *http.Request) {
 
 	amount := r.FormValue("amount")
 
-	amountInt, _ := strconv.ParseInt(amount, 6, 12)
+	amountInt, _ := strconv.Atoi(amount)
+
+	fmt.Print(amount)
 
 	links := ""
 
-	for i := 1; i < int(amountInt); i++ {
+	for i := 0; i < amountInt; i++ {
 		titleKey := fmt.Sprintf("Title%d", i)
 		links += "#" + r.FormValue(titleKey)
 
 		linkKey := fmt.Sprintf("Link%d", i)
 		links += ";" + r.FormValue(linkKey)
+
+		fmt.Print(r.FormValue(titleKey))
 	}
 
 	_, err = db.Exec("update rooms set links = $1 where user_id = $2", links, user.Id)
