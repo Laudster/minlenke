@@ -7,37 +7,59 @@
     <title>Document</title>
 </head>
 <body>
+    {{if .Admin}}
+        <button id="åpne"> Rediger </button>
+        <script src="/static/script/skins/skin1.js"></script>
+    {{end}}
+
     <div class="body">
         <div>
             <img width="60%" src="https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Fimg.freepik.com%2Fpremium-vector%2Fvector-summer-mountains-landscape-flat-style-flat-hills-mountain-woods-vector-illustration_646079-2264.jpg&sp=1746620767T751a88f5efd43cadccaf29a76d25297ff1794b7d34eb5b5058009b576116ee8f" alt="">
-            <h1> {{.Name}} </h1>
+            <h1> {{.Room.Name}} </h1>
 
-            <p> {{.Body}} </p>
+            <p> {{.Room.Body}} </p>
         </div>
 
         <div class="lenker">
             <h2> Mine lenker </h2>
 
             <ul>
-                <li>
-                    <img width="30px" height="30px" src="" alt="">
-                    <a href="/lenke"> Lenke tekst </a>
-                </li>
-                <li>
-                    <img width="30px" height="30px" src="" alt="">
-                    <a href="/lenke"> Lenke tekst </a>
-                </li>
-                <li>
-                    <img width="30px" height="30px" src="" alt="">
-                    <a href="/lenke"> Lenke tekst </a>
-                </li>
-                <li>
-                    <img width="30px" height="30px" src="" alt="">
-                    <a href="/lenke"> Lenke tekst </a>
-                </li>
+                {{range .Links}}
+                    <li>
+                        <img width="30px" height="30px" src="{{.Link}}/favicon.ico" alt="">
+                        <a href="{{.Link}}"> {{.Title}} </a>
+                    </li>
+                {{end}}
             </ul>
         </div>
+    </div>
 
+    <div id="modal" class="modal">
+        <button id="lukk"> Lukk </button>
+
+        <h2> Tekst </h2>
+        <form action="/save-body" method="post">
+            <input class="csrf_token" type="hidden" name="csrf_token">
+            <input type="hidden" name="user" value="{{.Room.Name}}">
+            <textarea name="body" id=""> {{.Room.Body}} </textarea>
+            <button> Lagre </button>
+        </form>
+
+        <h2> Lenker </h2>
+
+        <form id="links" action="/save-links" method="post">
+            <input class="csrf_token" type="hidden" name="csrf_token">
+            <input type="hidden" name="user" value="{{.Room.Name}}">
+            <input id="amount" type="hidden" name="amount" value="{{len .Links}}">
+            {{range $i, $v :=  .Links}}
+                <input id="Title{{$i}}" name="Title{{$i}}" type="text" value="{{$v.Title}}">
+                <input id="Link{{$i}}" name="Link{{$i}}" type="text" value="{{$v.Link}}">
+                <button id="Remove{{$i}}" type="button" onclick="minus('{{$i}}')"> - </button><br>
+            {{end}}
+            <button id="plusBTN" onclick="plus()" type="button"> + </button>
+            <br><br>
+            <input type="Submit" value="Lagre">
+        </form>
     </div>
 </body>
 </html>

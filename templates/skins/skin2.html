@@ -19,15 +19,11 @@
             </p>
     
             <ul>
-                <li>
-                    <a href="/lenke"> Lenke tekst </a>
-                </li>
-                <li>
-                    <a href="/lenke"> Lenke tekst </a>
-                </li>
-                <li>
-                    <a href="/lenke"> Lenke tekst </a>
-                </li>
+                {{range .Links}}
+                    <li>
+                        <a href="{{.Link}}"> {{.Title}} </a>
+                    </li>
+                {{end}}
             </ul>
     
             <div class="social">

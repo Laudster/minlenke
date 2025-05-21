@@ -6,11 +6,18 @@ import (
 	"html/template"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 var templates = template.Must(template.ParseFiles("templates/index.html", "templates/registrer.html", "templates/login.html", "templates/skins/skin1.html", "templates/skins/skin2.html", "templates/skins/skin3.html"))
 
 var db *sql.DB
+
+type Link struct {
+	Title string
+	Link  string
+}
 
 func index(w http.ResponseWriter, r *http.Request) {
 	user, err := getUser(r)
@@ -26,16 +33,123 @@ func index(w http.ResponseWriter, r *http.Request) {
 func besøksside(w http.ResponseWriter, r *http.Request) {
 	username := r.PathValue("navn")
 
-	room, _ := getRoom(username)
+	room, err := getRoom(username)
 
-	style := fmt.Sprintf("%d", room.Style)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	err := templates.ExecuteTemplate(w, "skin"+style+".html", room)
+	var links []Link
+
+	parts := strings.SplitSeq(room.Links, "#")
+	for part := range parts {
+		if part == "" {
+			continue
+		}
+
+		sepIndex := strings.Index(part, ";")
+		if sepIndex != -1 {
+			title := part[:sepIndex]
+			link := part[sepIndex+1:]
+
+			links = append(links, Link{
+				Title: title,
+				Link:  link,
+			})
+		}
+	}
+
+	user, _ := getUser(r)
+
+	data := map[string]any{
+		"Room":  room,
+		"Links": links,
+		"Admin": strings.ToUpper(username) == strings.ToUpper(user.Name),
+	}
+
+	err = templates.ExecuteTemplate(w, "skin"+room.Style+".html", data)
 
 	if err != nil {
 		http.Error(w, "Klarte ikke laste inn side "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func saveBody(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	user, _ := getUser(r)
+
+	if user.Name != r.FormValue("user") || user.Name == "" {
+		http.Error(w, "Not authorized", http.StatusUnauthorized)
+		return
+	}
+
+	err := csrfCheck(r, user.Csrf)
+
+	if err != nil {
+		http.Error(w, "Not authorized", http.StatusUnauthorized)
+		return
+	}
+
+	_, err = db.Exec("update rooms set body = $1 where user_id = $2", r.FormValue("body"), user.Id)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	http.Redirect(w, r, "/"+user.Name, http.StatusFound)
+	return
+}
+
+func saveLinks(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	user, _ := getUser(r)
+
+	if user.Name != r.FormValue("user") || user.Name == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	err := csrfCheck(r, user.Csrf)
+
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	amount := r.FormValue("amount")
+
+	amountInt, _ := strconv.ParseInt(amount, 6, 12)
+
+	links := ""
+
+	for i := 1; i < int(amountInt); i++ {
+		titleKey := fmt.Sprintf("Title%d", i)
+		links += "#" + r.FormValue(titleKey)
+
+		linkKey := fmt.Sprintf("Link%d", i)
+		links += ";" + r.FormValue(linkKey)
+	}
+
+	_, err = db.Exec("update rooms set links = $1 where user_id = $2", links, user.Id)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	http.Redirect(w, r, "/"+user.Name, http.StatusFound)
+	return
 }
 
 func registrer(w http.ResponseWriter, r *http.Request) {
@@ -147,6 +261,8 @@ func main() {
 
 	db, _ = createDB()
 
+	http.HandleFunc("/save-links", saveLinks)
+	http.HandleFunc("/save-body", saveBody)
 	http.HandleFunc("/registrer", registrer)
 	http.HandleFunc("/logginn", loggin)
 	http.HandleFunc("/loggut", logout)

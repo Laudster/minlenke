@@ -67,3 +67,24 @@ a:hover
     flex-direction: column;
     align-items: center;
 }
+
+.modal
+{
+    display: none;
+    position: fixed;
+    z-index: 2;
+    background-color: white;
+    border: 1px solid black;
+    padding: 1rem;
+
+    left: 0;
+    top: 10vh;
+}
+
+textarea
+{
+    padding: 1rem;
+    width: 80%;
+    border: 2px solid #ccc;
+    resize: none;
+}
