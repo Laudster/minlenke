@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-var templates = template.Must(template.ParseFiles("templates/index.html", "templates/registrer.html", "templates/login.html", "templates/skins/skin1.html", "templates/skins/skin2.html", "templates/skins/skin3.html"))
+var templates = template.Must(template.ParseFiles("templates/index.html", "templates/registrer.html", "templates/login.html", "templates/rediger.html", "templates/skins/skin1.html", "templates/skins/skin2.html", "templates/skins/skin3.html"))
 
 var db *sql.DB
 
@@ -32,6 +32,31 @@ func index(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func rediger(w http.ResponseWriter, r *http.Request) {
+	user, err := getUser(r)
+
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	room, _ := getRoom(user.Name)
+
+	links := formatLinks(room.Links)
+
+	data := map[string]any{
+		"Room":  room,
+		"Links": links,
+	}
+
+	err = templates.ExecuteTemplate(w, "rediger.html", data)
+
+	if err != nil {
+		http.Error(w, "Klarte ikke laste inn side", http.StatusInternalServerError)
+		return
+	}
+}
+
 func besøksside(w http.ResponseWriter, r *http.Request) {
 	username := r.PathValue("navn")
 
@@ -42,25 +67,7 @@ func besøksside(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var links []Link
-
-	parts := strings.SplitSeq(room.Links, "#")
-	for part := range parts {
-		if part == "" {
-			continue
-		}
-
-		sepIndex := strings.Index(part, ";")
-		if sepIndex != -1 {
-			title := part[:sepIndex]
-			link := part[sepIndex+1:]
-
-			links = append(links, Link{
-				Title: title,
-				Link:  link,
-			})
-		}
-	}
+	links := formatLinks(room.Links)
 
 	user, _ := getUser(r)
 
@@ -77,6 +84,37 @@ func besøksside(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Klarte ikke laste inn side "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func saveTheme(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	user, _ := getUser(r)
+
+	if user.Name == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	err := csrfCheck(r, user.Csrf)
+
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	_, err = db.Exec("update rooms set style = $1 where user_id = $2", r.FormValue("theme"), user.Id)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
+	return
 }
 
 func saveBody(w http.ResponseWriter, r *http.Request) {
@@ -106,8 +144,7 @@ func saveBody(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/"+user.Name, http.StatusFound)
-	return
+	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
 }
 
 func saveLinks(w http.ResponseWriter, r *http.Request) {
@@ -151,7 +188,7 @@ func saveLinks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/"+user.Name, http.StatusFound)
+	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
 }
 
 func saveImage(w http.ResponseWriter, r *http.Request) {
@@ -174,7 +211,7 @@ func saveImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.ParseMultipartForm(10 << 20)
+	r.ParseMultipartForm(5 << 20)
 
 	file, _, err := r.FormFile("image")
 
@@ -194,7 +231,7 @@ func saveImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/"+user.Name, http.StatusFound)
+	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
 }
 
 func registrer(w http.ResponseWriter, r *http.Request) {
@@ -231,9 +268,7 @@ func registrer(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.Redirect(w, r, "/", http.StatusFound)
-
-		return
+		http.Redirect(w, r, "/rediger", http.StatusFound)
 	}
 }
 
@@ -306,6 +341,7 @@ func main() {
 
 	db, _ = createDB()
 
+	http.HandleFunc("/save-theme", saveTheme)
 	http.HandleFunc("/save-image", saveImage)
 	http.HandleFunc("/save-links", saveLinks)
 	http.HandleFunc("/save-body", saveBody)
@@ -313,6 +349,7 @@ func main() {
 	http.HandleFunc("/logginn", loggin)
 	http.HandleFunc("/loggut", logout)
 	http.HandleFunc("/{navn}", besøksside)
+	http.HandleFunc("/rediger", rediger)
 	http.HandleFunc("/", index)
 
 	http.ListenAndServe(":8080", nil)

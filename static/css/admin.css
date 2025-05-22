@@ -1,0 +1,32 @@
+.modal
+{
+    display: none;
+    position: fixed;
+    z-index: 2;
+    background-color: white;
+    border: 1px solid black;
+    padding: 1rem;
+
+    left: 0;
+    top: 10vh;
+}
+
+.bildelast
+{
+    display: block;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.bildelast:hover
+{
+    color: rgb(115, 114, 179);
+}
+
+textarea
+{
+    padding: 1rem;
+    width: 80%;
+    border: 2px solid #ccc;
+    resize: none;
+}

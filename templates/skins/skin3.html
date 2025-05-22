@@ -7,24 +7,80 @@
     <title>Document</title>
 </head>
 <body>
+    {{if .Admin}}
+        <button id="åpne"> Rediger </button>
+        <script src="/static/scriptadmin.js"></script>
+        <link rel="stylesheet" href="/static/css/admin.css">
+    {{end}}
+
     <div class="profile">
-        <img width="100px" height="100px" src="https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Fcdn.pixabay.com%2Fphoto%2F2015%2F10%2F05%2F22%2F37%2Fblank-profile-picture-973460_1280.png&sp=1746621531Tac26aa949415bd821303c8d81c03d284d4ed511805ce93e077bb43ecc047ff19" alt="">
-        <h1> Mitt Navn </h1>
+        <img width="100px" height="100px" src="data:image/png;base64,{{.Image}}" alt="">
+        <h1> {{.Room.Name}} </h1>
     </div>
 
     <div class="bio">
         <p> 
-            jeg er jeg er jeg er jeg er jeg er jeg <br>
-            er jeg er jeg er jeg er jeg er jeg er <br>
-            jeg er jeg er jeg er jeg er jeg er 
+            {{.Room.Body}}
         </p>
     </div>
 
     <div class="social">
-        <a href="/social"> 🌐 </a>
-        <a href="/social"> 🌐 </a>
-        <a href="/social"> 🌐 </a>
-        <a href="/social"> 🌐 </a>
+        {{range .Links}}
+            <a target="_blank" href="{{.Link}}"> <img width="30px" height="30px" src="{{.Link}}" class="favicon"> </a>
+        {{end}}
+    </div>
+
+        <div id="modal" class="modal">
+        <button id="lukk"> Lukk </button>
+
+        <h2> Profil bilde </h2>
+        <form action="/save-image" method="post" enctype="multipart/form-data">
+            <input class="csrf_token" type="hidden" name="csrf_token">
+            <input type="hidden" name="user" value="{{.Room.Name}}">
+            <label class="bildelast" for="lastbilde"> Last opp bilde </label>
+            <input hidden id="lastbilde" type="file" name="image">
+            <button> Lagre </button>
+        </form>
+
+        <h2> Tekst </h2>
+        <form action="/save-body" method="post">
+            <input class="csrf_token" type="hidden" name="csrf_token">
+            <input type="hidden" name="user" value="{{.Room.Name}}">
+            <textarea name="body" id=""> {{.Room.Body}} </textarea>
+            <button> Lagre </button>
+        </form>
+
+        <h2> Lenker </h2>
+
+        <form id="links" action="/save-links" method="post">
+            <input class="csrf_token" type="hidden" name="csrf_token">
+            <input type="hidden" name="user" value="{{.Room.Name}}">
+            <input id="amount" type="hidden" name="amount" value="{{len .Links}}">
+            {{range $i, $v :=  .Links}}
+                <input id="Title{{$i}}" name="Title{{$i}}" type="text" value="{{$v.Title}}">
+                <input id="Link{{$i}}" name="Link{{$i}}" type="text" value="{{$v.Link}}">
+                <button id="Remove{{$i}}" type="button" onclick="minus('{{$i}}')"> - </button><br>
+            {{end}}
+            <button id="plusBTN" onclick="plus()" type="button"> + </button>
+            <br><br>
+            <input type="Submit" value="Lagre">
+        </form>
+
+        <br>
+        <a href="/rediger"> Rediger Tema </a>
     </div>
 </body>
+<script>
+    let favicons = document.getElementsByClassName("favicon")
+
+    for (let i = 0; i < favicons.length; i++) {
+        let favicon = ""
+
+        let splits = favicons[i].src.split("/")
+
+        favicon += "https://" + splits[2] + "/favicon.ico"
+
+        favicons[i].src = favicon
+    }
+</script>
 </html>

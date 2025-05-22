@@ -47,7 +47,7 @@ func registerate(username string, password string, email string) error {
 		return err
 	}
 
-	_, err = db.Exec("insert into rooms(name, body, links, image, style, user_id) values($1, $2, $3, $4, $5, $6)", username, "Denne brukeren har enda ikke skrevet noe her", "#eksempel;https://eksempel.no#example;https://example.com#esempio;https://esempio.it", []byte(""), "1", id)
+	_, err = db.Exec("insert into rooms(name, body, links, image, style, user_id) values($1, $2, $3, $4, $5, $6)", username, "Denne brukeren har enda ikke skrevet noe her", "#eksempel;https://eksempel.no#example;https://example.com#esempio;https://esempio.it", []byte(""), "3", id)
 
 	if err != nil {
 		return err

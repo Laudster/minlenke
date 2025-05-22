@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/rediger.css">
+    <title>Document</title>
+</head>
+<body>
+    <a href="/{{.Room.Name}}"> Se på siden din </a>
+
+    <h1> Rediger din side </h1>
+
+    <h2> Velg tema </h2>
+
+    <form action="/save-theme" method="post">
+        <div class="row">
+            <input class="csrf_token" type="hidden" name="csrf_token">
+
+            <input id="currentTheme" type="hidden" value="{{.Room.Style}}">
+
+            <input value="1" hidden id="tema1" type="radio" name="theme">
+            <label for="tema1"> <img width="400px" src="/static/images/skins/skin1.png" alt=""> </label>
+
+            <input value="2" hidden id="tema2" type="radio" name="theme">
+            <label for="tema2"> <img width="400px" src="/static/images/skins/skin2.png" alt=""> </label>
+
+            <input value="3" hidden id="tema3" type="radio" name="theme">
+            <label for="tema3"> <img width="400px" src="/static/images/skins/skin3.png" alt=""> </label>
+        </div>
+
+        <button> Lagre </button>
+    </form>
+
+    <h2> Profilbilde </h2>
+
+    <form action="/save-image" method="post" enctype="multipart/form-data">
+        <input class="csrf_token" type="hidden" name="csrf_token">
+        <input type="hidden" name="user" value="{{.Room.Name}}">
+        <label class="bildelast" for="lastbilde"> Last opp bilde </label>
+        <input hidden id="lastbilde" type="file" name="image">
+        <button> Lagre </button>
+    </form>
+
+    <h2> Beskrivelse </h2>
+    
+    <form action="/save-body" method="post">
+        <input class="csrf_token" type="hidden" name="csrf_token">
+        <input type="hidden" name="user" value="{{.Room.Name}}">
+        <textarea name="body" id=""> {{.Room.Body}} </textarea>
+        <button> Lagre </button>
+    </form>
+
+    <h2> Lenker </h2>
+
+    <form id="links" action="/save-links" method="post">
+        <input class="csrf_token" type="hidden" name="csrf_token">
+        <input type="hidden" name="user" value="{{.Room.Name}}">
+        <input id="amount" type="hidden" name="amount" value="{{len .Links}}">
+        {{range $i, $v :=  .Links}}
+            <input id="Title{{$i}}" name="Title{{$i}}" type="text" value="{{$v.Title}}">
+            <input id="Link{{$i}}" name="Link{{$i}}" type="text" value="{{$v.Link}}">
+            <button id="Remove{{$i}}" type="button" onclick="minus('{{$i}}')"> - </button><br>
+        {{end}}
+        <button id="plusBTN" onclick="plus()" type="button"> + </button>
+        <br><br>
+        <input type="Submit" value="Lagre">
+    </form>
+</body>
+
+<script>
+    document.getElementById("tema" + document.getElementById("currentTheme").value).checked = true
+</script>
+<script src="/static/script/admin.js"></script>
+</html>

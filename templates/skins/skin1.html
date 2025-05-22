@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/skins/skin1.css">
-    <title>Document</title>
+    <title>{{.Room.Name}}</title>
 </head>
 <body>
     {{if .Admin}}
         <button id="åpne"> Rediger </button>
-        <script src="/static/script/skins/skin1.js"></script>
+        <script src="/static/script/admin.js"></script>
+        <link rel="stylesheet" href="/static/css/admin.css">
     {{end}}
 
     <div class="body">
@@ -27,7 +28,7 @@
                 {{range .Links}}
                     <li>
                         <img width="30px" height="30px" src="{{.Link}}" class="favicon">
-                        <a href="{{.Link}}"> {{.Title}} </a>
+                        <a href="{{.Link}}" target="_blank"> {{.Title}} </a>
                     </li>
                 {{end}}
             </ul>
@@ -41,7 +42,8 @@
         <form action="/save-image" method="post" enctype="multipart/form-data">
             <input class="csrf_token" type="hidden" name="csrf_token">
             <input type="hidden" name="user" value="{{.Room.Name}}">
-            <input type="file" name="image">
+            <label class="bildelast" for="lastbilde"> Last opp bilde </label>
+            <input hidden id="lastbilde" type="file" name="image">
             <button> Lagre </button>
         </form>
 
@@ -68,6 +70,9 @@
             <br><br>
             <input type="Submit" value="Lagre">
         </form>
+
+        <br>
+        <a href="/rediger"> Rediger Tema </a>
     </div>
 </body>
 

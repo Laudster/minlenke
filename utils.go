@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -28,4 +29,28 @@ func generateToken(length int) (string, error) {
 	}
 
 	return base64.URLEncoding.EncodeToString(bytes), nil
+}
+
+func formatLinks(unformattedLinks string) []Link {
+	var links []Link
+
+	parts := strings.SplitSeq(unformattedLinks, "#")
+	for part := range parts {
+		if part == "" {
+			continue
+		}
+
+		sepIndex := strings.Index(part, ";")
+		if sepIndex != -1 {
+			title := part[:sepIndex]
+			link := part[sepIndex+1:]
+
+			links = append(links, Link{
+				Title: title,
+				Link:  link,
+			})
+		}
+	}
+
+	return links
 }

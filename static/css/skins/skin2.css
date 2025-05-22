@@ -40,19 +40,20 @@ ul
 
 li
 {
+    background-color: #fffafa;
+    border: 1px solid #766b6b;
+    padding: 1rem;
+    width: 50%;
+    border-radius: 1rem;
     margin-bottom: 4rem;
 }
 
 li a
 {
-    background-color: #fffafa;
-    border: 1px solid #766b6b;
-    padding: 1rem;
-    padding-left: 6rem;
-    padding-right: 6rem;
-    border-radius: 1rem;
+    margin-left: 1.5rem;
     text-decoration: none;
     font-family: "Open Sans", sans-serif;
+    font-size: 1.2rem;
     text-align: center;
     color: black;
 }
