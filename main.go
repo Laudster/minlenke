@@ -2,8 +2,10 @@ package main
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -64,6 +66,7 @@ func besøksside(w http.ResponseWriter, r *http.Request) {
 
 	data := map[string]any{
 		"Room":  room,
+		"Image": base64.StdEncoding.EncodeToString(room.Image),
 		"Links": links,
 		"Admin": strings.ToUpper(username) == strings.ToUpper(user.Name),
 	}
@@ -131,8 +134,6 @@ func saveLinks(w http.ResponseWriter, r *http.Request) {
 
 	amountInt, _ := strconv.Atoi(amount)
 
-	fmt.Print(amount)
-
 	links := ""
 
 	for i := 0; i < amountInt; i++ {
@@ -141,8 +142,6 @@ func saveLinks(w http.ResponseWriter, r *http.Request) {
 
 		linkKey := fmt.Sprintf("Link%d", i)
 		links += ";" + r.FormValue(linkKey)
-
-		fmt.Print(r.FormValue(titleKey))
 	}
 
 	_, err = db.Exec("update rooms set links = $1 where user_id = $2", links, user.Id)
@@ -153,7 +152,49 @@ func saveLinks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/"+user.Name, http.StatusFound)
-	return
+}
+
+func saveImage(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	user, _ := getUser(r)
+
+	if user.Name != r.FormValue("user") || user.Name == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	err := csrfCheck(r, user.Csrf)
+
+	if err != nil {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	r.ParseMultipartForm(10 << 20)
+
+	file, _, err := r.FormFile("image")
+
+	if err != nil {
+		http.Error(w, "Image uplaod errror: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	defer file.Close()
+
+	imageData, _ := io.ReadAll(file)
+
+	_, err = db.Exec("update rooms set image = $1 where user_id = $2", imageData, user.Id)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	http.Redirect(w, r, "/"+user.Name, http.StatusFound)
 }
 
 func registrer(w http.ResponseWriter, r *http.Request) {
@@ -265,6 +306,7 @@ func main() {
 
 	db, _ = createDB()
 
+	http.HandleFunc("/save-image", saveImage)
 	http.HandleFunc("/save-links", saveLinks)
 	http.HandleFunc("/save-body", saveBody)
 	http.HandleFunc("/registrer", registrer)

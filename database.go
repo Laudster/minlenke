@@ -29,6 +29,7 @@ func createDB() (*sql.DB, error) {
 			name text,
 			body text,
 			links text,
+			image blob,
 			style text,
 			user_id integer not null,
 			foreign key (user_id) references users(id)
