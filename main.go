@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-var templates = template.Must(template.ParseFiles("templates/index.html", "templates/registrer.html", "templates/login.html", "templates/rediger.html", "templates/skins/skin1.html", "templates/skins/skin2.html", "templates/skins/skin3.html"))
+var templates = template.Must(template.ParseFiles("templates/index.html", "templates/registrer.html", "templates/login.html", "templates/rediger.html", "templates/skins/skin1.html", "templates/skins/skin2.html", "templates/skins/skin3.html", "templates/components/admin.html"))
 
 var db *sql.DB
 

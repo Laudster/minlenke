@@ -8,9 +8,7 @@
 </head>
 <body>
     {{if .Admin}}
-        <button id="åpne"> Rediger </button>
-        <script src="/static/script/admin.js"></script>
-        <link rel="stylesheet" href="/static/css/admin.css">
+        {{template "admin" .}}
     {{end}}
 
     <div class="body">
@@ -34,59 +32,6 @@
             </ul>
         </div>
     </div>
-
-    <div id="modal" class="modal">
-        <button id="lukk"> Lukk </button>
-
-        <h2> Profil bilde </h2>
-        <form action="/save-image" method="post" enctype="multipart/form-data">
-            <input class="csrf_token" type="hidden" name="csrf_token">
-            <input type="hidden" name="user" value="{{.Room.Name}}">
-            <label class="bildelast" for="lastbilde"> Last opp bilde </label>
-            <input hidden id="lastbilde" type="file" name="image">
-            <button> Lagre </button>
-        </form>
-
-        <h2> Tekst </h2>
-        <form action="/save-body" method="post">
-            <input class="csrf_token" type="hidden" name="csrf_token">
-            <input type="hidden" name="user" value="{{.Room.Name}}">
-            <textarea name="body" id=""> {{.Room.Body}} </textarea>
-            <button> Lagre </button>
-        </form>
-
-        <h2> Lenker </h2>
-
-        <form id="links" action="/save-links" method="post">
-            <input class="csrf_token" type="hidden" name="csrf_token">
-            <input type="hidden" name="user" value="{{.Room.Name}}">
-            <input id="amount" type="hidden" name="amount" value="{{len .Links}}">
-            {{range $i, $v :=  .Links}}
-                <input id="Title{{$i}}" name="Title{{$i}}" type="text" value="{{$v.Title}}">
-                <input id="Link{{$i}}" name="Link{{$i}}" type="text" value="{{$v.Link}}">
-                <button id="Remove{{$i}}" type="button" onclick="minus('{{$i}}')"> - </button><br>
-            {{end}}
-            <button id="plusBTN" onclick="plus()" type="button"> + </button>
-            <br><br>
-            <input type="Submit" value="Lagre">
-        </form>
-
-        <br>
-        <a href="/rediger"> Rediger Tema </a>
-    </div>
 </body>
-
-<script>
-    let favicons = document.getElementsByClassName("favicon")
-
-    for (let i = 0; i < favicons.length; i++) {
-        let favicon = ""
-
-        let splits = favicons[i].src.split("/")
-
-        favicon += "https://" + splits[2] + "/favicon.ico"
-
-        favicons[i].src = favicon
-    }
-</script>
+<script src="/static/script/favicons.js"> </script>
 </html>

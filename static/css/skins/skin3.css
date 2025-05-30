@@ -35,12 +35,18 @@ p
 
 .social
 {
-    text-align: center;
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
     margin-top: 30vh;
-    font-size: 2.5rem;
 }
 
-a
+a img
 {
-    text-decoration: none;
+    transition: 0.2s;
+}
+
+a img:hover
+{
+    transform: scale(1.5);
 }
