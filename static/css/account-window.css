@@ -24,7 +24,7 @@ h4
     font-size: 1.5rem;
 }
 
-input:not([hidden])
+input
 {
     display: block;
     padding: 1rem;
@@ -34,6 +34,7 @@ input:not([hidden])
     background-color: #2e2b3d;
     color: white;
     margin-bottom: 1rem;
+    font-size: 1rem;
 }
 
 button {
@@ -41,6 +42,6 @@ button {
     padding: 0.8rem;
     border-radius: 1rem;
     font-family: "Roboto Mono", monospace;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     cursor: pointer;
 }

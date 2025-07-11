@@ -42,3 +42,11 @@ label img {
 :checked + label img {
     transform: scale(0.9);
 }
+
+.slett
+{
+    background-color: red;
+    color: white;
+    padding: 0.5rem;
+    cursor: pointer;
+}

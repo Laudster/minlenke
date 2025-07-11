@@ -7,13 +7,11 @@ import (
 )
 
 func createDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "db/data.db")
+	db, err := sql.Open("sqlite3", "db/data.db?_foreign_keys=ON&_journal_mode=WAL")
 
 	if err != nil {
 		return db, err
 	}
-
-	_, err = db.Exec("PRAGMA journal_mode=WAL;")
 
 	sqlStatement := `
 		create table if not exists users (
@@ -32,7 +30,7 @@ func createDB() (*sql.DB, error) {
 			image blob,
 			style text,
 			user_id integer not null,
-			foreign key (user_id) references users(id)
+			foreign key (user_id) references users(id) on delete cascade
 		);
 	`
 

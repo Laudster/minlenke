@@ -22,9 +22,9 @@ type Link struct {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	user, err := getUser(r)
+	user, _ := getUser(r)
 
-	err = templates.ExecuteTemplate(w, "index.html", user.Name)
+	err := templates.ExecuteTemplate(w, "index.html", user.Name)
 
 	if err != nil {
 		http.Error(w, "Klarte ikke laste inn side", http.StatusInternalServerError)
@@ -58,6 +58,11 @@ func rediger(w http.ResponseWriter, r *http.Request) {
 }
 
 func besøksside(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Feil metode", http.StatusMethodNotAllowed)
+		return
+	}
+
 	username := r.PathValue("navn")
 
 	room, err := getRoom(username)
@@ -75,7 +80,7 @@ func besøksside(w http.ResponseWriter, r *http.Request) {
 		"Room":  room,
 		"Image": base64.StdEncoding.EncodeToString(room.Image),
 		"Links": links,
-		"Admin": strings.ToUpper(username) == strings.ToUpper(user.Name),
+		"Admin": strings.EqualFold(username, user.Name),
 	}
 
 	err = templates.ExecuteTemplate(w, "skin"+room.Style+".html", data)
@@ -114,7 +119,6 @@ func saveTheme(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
-	return
 }
 
 func saveBody(w http.ResponseWriter, r *http.Request) {
@@ -235,7 +239,8 @@ func saveImage(w http.ResponseWriter, r *http.Request) {
 }
 
 func registrer(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
+	switch r.Method {
+	case http.MethodGet:
 		errorMessage := r.URL.Query().Get("error")
 
 		err := templates.ExecuteTemplate(w, "registrer.html", errorMessage)
@@ -244,7 +249,7 @@ func registrer(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Klarte ikke laste inn side", http.StatusInternalServerError)
 			return
 		}
-	} else if r.Method == http.MethodPost {
+	case http.MethodPost:
 		username := r.FormValue("name")
 		email := r.FormValue("email")
 		password := r.FormValue("password")
@@ -273,7 +278,8 @@ func registrer(w http.ResponseWriter, r *http.Request) {
 }
 
 func loggin(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
+	switch r.Method {
+	case http.MethodGet:
 		errorMessage := r.URL.Query().Get("error")
 
 		err := templates.ExecuteTemplate(w, "login.html", errorMessage)
@@ -282,7 +288,7 @@ func loggin(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Klarte ikke laste inn side", http.StatusInternalServerError)
 			return
 		}
-	} else if r.Method == http.MethodPost {
+	case http.MethodPost:
 		username := r.FormValue("name")
 		password := r.FormValue("password")
 
@@ -331,8 +337,36 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusFound)
+}
 
-	return
+func slett(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Feil metode", http.StatusMethodNotAllowed)
+		return
+	}
+
+	user, err := getUser(r)
+
+	if err != nil {
+		http.Error(w, "Ingen bruker registrert", http.StatusUnauthorized)
+		return
+	}
+
+	err = csrfCheck(r, user.Csrf)
+
+	if err != nil {
+		http.Error(w, "Manglende bekreftelse på bruker identifikasjon", http.StatusUnauthorized)
+		return
+	}
+
+	_, err = db.Exec("delete from users where id = $1", user.Id)
+
+	if err != nil {
+		http.Error(w, "Kunne ikke slette bruker: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func main() {
@@ -348,9 +382,11 @@ func main() {
 	http.HandleFunc("/registrer", registrer)
 	http.HandleFunc("/logginn", loggin)
 	http.HandleFunc("/loggut", logout)
+	http.HandleFunc("/slett", slett)
 	http.HandleFunc("/{navn}", besøksside)
 	http.HandleFunc("/rediger", rediger)
 	http.HandleFunc("/", index)
 
+	fmt.Println("Running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }

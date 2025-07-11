@@ -16,11 +16,9 @@
 
         <form id="register" action="/registrer" method="post">
             <input required type="name" name="name" placeholder="Brukernavn">
-            <input id="email" type="email" name="email" placeholder="Email" hidden>
+            <input id="email" type="email" name="email" placeholder="Email (valgfri)">
             <input required type="password" name="password" placeholder="Passord">
             <input required type="password" name="confirmPassword" placeholder="Bekreft Passord">
-            <label style="color: white;" for="showEmail"> Legg til email for sikkerhet </label>
-            <input id="showEmail" type="checkbox">
             <div class="center">
                 <button> Registrer </button>
             </div>
@@ -29,10 +27,6 @@
 </body>
 
 <script>
-    document.getElementById("showEmail").addEventListener("change", () => {
-        document.getElementById("email").hidden = !document.getElementById("showEmail").checked;
-    })
-
     document.getElementById("register").onsubmit = function(event)
     {
         let name = event.target.name.value;

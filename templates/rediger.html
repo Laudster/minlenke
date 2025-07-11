@@ -66,6 +66,13 @@
         <br><br>
         <input type="Submit" value="Lagre">
     </form>
+
+    <h2> Slett bruker </h2>
+
+    <form action="/slett" method="post">
+        <input class="csrf_token" type="hidden" name="csrf_token">
+        <button onclick="return confirm('Er du sikker på at du vil slette brukeren din og alt som følger med')" class="slett"> Slett bruker </button>
+    </form>
 </body>
 
 <script>
