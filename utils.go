@@ -45,9 +45,15 @@ func formatLinks(unformattedLinks string) []Link {
 			title := part[:sepIndex]
 			link := part[sepIndex+1:]
 
+			var image []byte
+
+			webPage := strings.Split(link, "/")[2]
+			db.QueryRow("select image from logos where name = $1", webPage).Scan(&image)
+
 			links = append(links, Link{
 				Title: title,
 				Link:  link,
+				Logo: base64.StdEncoding.EncodeToString(image),
 			})
 		}
 	}

@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"io/ioutil"
 )
 
 var templates = template.Must(template.ParseFiles("templates/index.html", "templates/registrer.html", "templates/login.html", "templates/rediger.html", "templates/skins/skin1.html", "templates/skins/skin2.html", "templates/skins/skin3.html", "templates/components/admin.html"))
@@ -19,6 +20,7 @@ var db *sql.DB
 type Link struct {
 	Title string
 	Link  string
+	Logo string
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -182,7 +184,39 @@ func saveLinks(w http.ResponseWriter, r *http.Request) {
 		links += "#" + r.FormValue(titleKey)
 
 		linkKey := fmt.Sprintf("Link%d", i)
-		links += ";" + r.FormValue(linkKey)
+		link := r.FormValue(linkKey)
+
+		page := strings.Split(link, "/")[2]
+
+		var count int
+		db.QueryRow("select count(*) from logos where name = $1", page).Scan(&count)
+	
+		if count == 0  {
+			resp, err := http.Get("https://img.logo.dev/" + page + "?token=pk_VROKU-lyQAWLHET6MxycrA&retina=true")
+
+			if err != nil  {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			defer resp.Body.Close()
+
+			if resp.StatusCode != http.StatusOK {
+				http.Error(w, "Ikke fått logo", http.StatusInternalServerError)
+				return
+			}
+
+			image, err := ioutil.ReadAll(resp.Body)
+
+			if err != nil {
+				http.Error(w, "Could not read logo image", http.StatusInternalServerError)
+				return
+			}
+
+			_, err = db.Exec("insert into logos (name, image) values ($1, $2)", page, image)
+		}
+
+		links += ";" + link
 	}
 
 	_, err = db.Exec("update rooms set links = $1 where user_id = $2", links, user.Id)

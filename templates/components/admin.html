@@ -31,9 +31,10 @@
             <input type="hidden" name="user" value="{{.Room.Name}}">
             <input id="amount" type="hidden" name="amount" value="{{len .Links}}">
             {{range $i, $v :=  .Links}}
+                <br id="Break{{$i}}">
                 <input id="Title{{$i}}" name="Title{{$i}}" type="text" value="{{$v.Title}}">
                 <input id="Link{{$i}}" name="Link{{$i}}" type="text" value="{{$v.Link}}">
-                <button id="Remove{{$i}}" type="button" onclick="minus('{{$i}}')"> - </button><br>
+                <button id="Remove{{$i}}" type="button" onclick="minus('{{$i}}')"> - </button>
             {{end}}
             <button id="plusBTN" onclick="plus()" type="button"> + </button>
             <br><br>

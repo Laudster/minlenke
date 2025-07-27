@@ -32,6 +32,11 @@ func createDB() (*sql.DB, error) {
 			user_id integer not null,
 			foreign key (user_id) references users(id) on delete cascade
 		);
+
+		create table if not exists logos (
+			name text,
+			image blob
+		);
 	`
 
 	_, err = db.Exec(sqlStatement)

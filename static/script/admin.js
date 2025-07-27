@@ -30,18 +30,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function minus(num)
 {
-    document.getElementById("Remove" + num).remove()
-    document.getElementById("Title" + num).remove()
-    document.getElementById("Link" + num).remove()
+    document.getElementById("Remove" + num).remove();
+    document.getElementById("Title" + num).remove();
+    document.getElementById("Link" + num).remove();
+    document.getElementById("Break" + num).remove();
 
-    document.getElementById("amount").value = parseInt(document.getElementById("amount").value) - 1
+
+    let amount = document.getElementById("amount");
+    let numInt = parseInt(num);
+
+    if (amount.value > numInt) {
+        const roundabout = ["Remove", "Title", "Link", "Break"];
+        for (let i = numInt + 1; i < amount.value; i++) {
+            let newNum = String(i - 1);
+
+            for (let j = 0; j < roundabout.length; j++) {
+                document.getElementById(roundabout[j] + i).name = roundabout[j] + newNum;
+                document.getElementById(roundabout[j] + i).id = roundabout[j] + newNum;
+            }
+            
+            document.getElementById("Remove" + newNum).onclick = () => minus(newNum);
+        }
+    }
+
+    amount.value = parseInt(document.getElementById("amount").value) - 1;
 }
 
 function plus()
 {
     let amount = document.getElementById("amount")
+    let thisid = amount.value;
 
-    amount.value = parseInt(amount.value) + 1
+    let br = document.createElement("br")
+    br.id = "Break" + thisid;
+    document.getElementById("links").insertBefore(br, document.getElementById("plusBTN"))
 
     let title = document.createElement("input")
     title.id = "Title" + amount.value
@@ -62,12 +84,10 @@ function plus()
     let minusButton = document.createElement("button")
     minusButton.id = "Remove" + amount.value
     minusButton.type = "button"
-    minusButton.onclick = () => minus(amount.value)
+    minusButton.onclick = () => minus(thisid)
     minusButton.textContent = "-"
 
     document.getElementById("links").insertBefore(minusButton, document.getElementById("plusBTN"))
 
-    let br = document.createElement("br")
-
-    document.getElementById("links").insertBefore(br, document.getElementById("plusBTN"))
+    amount.value = parseInt(amount.value) + 1
 }

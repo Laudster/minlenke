@@ -23,7 +23,7 @@
             <ul>
                 {{range .Links}}
                     <li>
-                        <img width="30px" height="30px" src="{{.Link}}" class="favicon">
+                        <img width="30px" height="30px" src="data:image/webp;base64,{{.Logo}}">
                         <a target="_blank" href="{{.Link}}"> {{.Title}} </a>
                     </li>
                 {{end}}
@@ -33,5 +33,4 @@
         <img width="600" height="400" src="data:image/png;base64,{{.Image}}" alt="">
     </div>
 </body>
-<script src="/static/script/favicons.js"> </script>
 </html>
