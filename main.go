@@ -38,7 +38,7 @@ func rediger(w http.ResponseWriter, r *http.Request) {
 	user, err := getUser(r)
 
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 
@@ -102,14 +102,14 @@ func saveTheme(w http.ResponseWriter, r *http.Request) {
 	user, _ := getUser(r)
 
 	if user.Name == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 
 	err := csrfCheck(r, user.Csrf)
 
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 
@@ -132,14 +132,14 @@ func saveBody(w http.ResponseWriter, r *http.Request) {
 	user, _ := getUser(r)
 
 	if user.Name != r.FormValue("user") || user.Name == "" {
-		http.Error(w, "Not authorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 
 	err := csrfCheck(r, user.Csrf)
 
 	if err != nil {
-		http.Error(w, "Not authorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 
@@ -162,14 +162,14 @@ func saveLinks(w http.ResponseWriter, r *http.Request) {
 	user, _ := getUser(r)
 
 	if user.Name != r.FormValue("user") || user.Name == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 
 	err := csrfCheck(r, user.Csrf)
 
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 
@@ -185,6 +185,10 @@ func saveLinks(w http.ResponseWriter, r *http.Request) {
 
 		linkKey := fmt.Sprintf("Link%d", i)
 		link := r.FormValue(linkKey)
+
+		if strings.Contains(link, "https://") == false {
+			link = "https://" + link
+		}
 
 		page := strings.Split(link, "/")[2]
 
@@ -202,7 +206,7 @@ func saveLinks(w http.ResponseWriter, r *http.Request) {
 			defer resp.Body.Close()
 
 			if resp.StatusCode != http.StatusOK {
-				http.Error(w, "Ikke fått logo", http.StatusInternalServerError)
+				http.Error(w, "Ikke fått logo for " + page, http.StatusInternalServerError)
 				return
 			}
 
@@ -238,14 +242,14 @@ func saveImage(w http.ResponseWriter, r *http.Request) {
 	user, _ := getUser(r)
 
 	if user.Name != r.FormValue("user") || user.Name == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 
 	err := csrfCheck(r, user.Csrf)
 
 	if err != nil {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 
@@ -352,14 +356,14 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	user, err := getUser(r)
 
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 
 	err = csrfCheck(r, user.Csrf)
 
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Ikke autorisert", http.StatusUnauthorized)
 		return
 	}
 

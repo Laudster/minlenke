@@ -20,7 +20,7 @@
         <form action="/save-body" method="post">
             <input class="csrf_token" type="hidden" name="csrf_token">
             <input type="hidden" name="user" value="{{.Room.Name}}">
-            <textarea name="body" id=""> {{.Room.Body}} </textarea>
+            <textarea name="body" id="">{{.Room.Body}} </textarea>
             <button> Lagre </button>
         </form>
 
